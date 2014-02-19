@@ -3,7 +3,7 @@
 # example script, the purpose of which is to show all the variables and the absolute basics of how to mutate them
 echo $MOOV_DEPLOY_ACCOUNT_NAME >&2
 echo $MOOV_DEPLOY_SITE_NAME >&2
-echo $MOOV_DEPLOY_ENDPOINT_NAME >&2
+echo $MOOV_DEPLOY_ENDPOINT_MODE >&2
 echo $MOOV_DEPLOY_PROJECT_DIR >&2
 echo $MOOV_DEPLOY_LAYER >&2
 echo $MOOV_DEPLOY_DEPLOYMENT_ID >&2
@@ -22,7 +22,7 @@ echo "	deployment id: some_git_hash" >&2
 echo "	notes: these are the deployment notes" >&2
 
 echo MOOV_DEPLOY_SITE_NAME="demosite"
-echo MOOV_DEPLOY_ENDPOINT_NAME="demoendpoint"
+echo MOOV_DEPLOY_ENDPOINT_MODE="demoendpoint"
 echo MOOV_DEPLOY_LAYER="demolayer"
 echo MOOV_DEPLOY_DEPLOYMENT_ID="some_git_hash"
 echo MOOV_DEPLOY_NOTES="these are the deployment notes"
