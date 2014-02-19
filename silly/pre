@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'http'
+
+$stdout = STDERR
+
+url = "http://thefuckingweather.com/?random=True"
+r = HTTP.get(url).response
+
+where = "?"
+sowhat = "?"
+temp = 0
+
+r.body.gsub(/id="locationDisplaySpan".*?>(.*?)</) do |match|
+  where = $1
+end
+
+r.body.gsub(/class="temperature".*?>(.*?)</) do |match|
+  temp = $1.strip.to_i
+end
+
+r.body.gsub(/class="remark".*?>(.*?)</) do |match|
+  sowhat = $1
+end
+
+puts where
+puts temp
+puts sowhat
+
+if temp < 25
+  exit 1
+end
+
+exit 0
