@@ -44,7 +44,7 @@ fi
 # do this after the other cleanup steps are performed
 if [ $TAGIT = "true" ]; then
 	echo "tagging the deployed code"  1>&2
-	TAG="v$MOOV_DEPLOY_DEPLOY_NUMBER"
-	git tag -a $TAG -m "automated deploy of build $MOOV_DEPLOY_ENDPOINT_VERSION"
+	TAG="v$MOOV_DEPLOY_MODE_VERSION"
+	git tag -a $TAG -m "automated deploy of build $MOOV_DEPLOY_MODE_VERSION"
 	git push origin $TAG
 fi
