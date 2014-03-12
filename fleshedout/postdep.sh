@@ -12,39 +12,52 @@ TAGIT="false"
 #  - don't use the -t flag and instead manually make the tag yourself, it has a high chance of completely screwing up the repo
 
 for var do
-	if [ $var = "-t" ]; then
-		TAGIT="true"
-	elif [ $var = "-c" ]; then
-		COMPILE="true"
-	elif [ $var = "-m" ]; then
-		MINFIY="true"
-	else
-		echo "Unknown flag: $var" 1>&2 # don't exit, we need to preform other cleanup things regardless...
-	fi
+  if [ $var = "-t" ]; then
+    TAGIT="true"
+  elif [ $var = "-c" ]; then
+    COMPILE="true"
+  elif [ $var = "-m" ]; then
+    MINFIY="true"
+  else
+    echo "Unknown flag: $var" 1>&2 # don't exit, we need to preform other cleanup things regardless...
+  fi
 done
 
 if [ $COMPILE = "true" ]; then
-	echo "Coffeescript files were compiled in the predeploy, removing generated files." 1>&2
-	find . -name *\.coffee | while read x; do
-		rm ${x%.coffee}.js
-	done
-	echo "Deleted all compiled coffeescript files." 1>&2
+  echo "Coffeescript files were compiled in the predeploy, removing generated files." 1>&2
+  find . -name *\.coffee | while read x; do
+    rm ${x%.coffee}.js
+  done
+  echo "Deleted all compiled coffeescript files." 1>&2
 fi
 
 # after removing any generated .js files
 if [ $MINFIY = "true" ]; then
-	echo "js files were minified before being sent to the cloud, reverting minification." 1>&2
-	find . -name *\.js | while read x; do
-		git checkout $x
-	done
-	echo "Rechecked out all js files." 1>&2
+  echo "js files were minified before being sent to the cloud, reverting minification." 1>&2
+  find . -name *\.js | while read x; do
+    git checkout $x
+  done
+  echo "Rechecked out all js files." 1>&2
 fi
 
 # tag the current commit with the build number and push the tag
 # do this after the other cleanup steps are performed
 if [ $TAGIT = "true" ]; then
-	echo "tagging the deployed code"  1>&2
-	TAG="v$MOOV_DEPLOY_DEPLOY_NUMBER"
-	git tag -a $TAG -m "automated deploy of build $MOOV_DEPLOY_ENDPOINT_VERSION"
-	git push origin $TAG
+  echo "tagging the deployed code"  1>&2
+  TAG="v$MOOV_DEPLOY_ENDPOINT_VERSION"
+  git tag -a $TAG -m "automated deploy of build $MOOV_DEPLOY_ENDPOINT_VERSION. status => $MOOV_DEPLOY_DEPLOY_STATUS"
+  if [ $? != 0 ]; then
+    echo "Tag v$MOOV_DEPLOY_ENDPOINT_VERSION already exists. Manually tag the build. Values to use in tagging:" 1>&2
+    echo "  endpoint version: $MOOV_DEPLOY_ENDPOINT_VERSION" 1>&2
+    echo "  deploy status: $MOOV_DEPLOY_DEPLOY_STATUS" 1>&2
+  else
+    git push origin $TAG
+    if [ $? != 0 ]; then
+      echo "Error tagging the build. Values that would've been used to tag:" 1>&2
+      echo "  endpoint version: $MOOV_DEPLOY_ENDPOINT_VERSION" 1>&2
+      echo "  deploy status: $MOOV_DEPLOY_DEPLOY_STATUS" 1>&2
+    else
+      echo "successfully tagged deploy number $MOOV_DEPLOY_ENDPOINT_VERSION as $MOOV_DEPLOY_DEPLOY_STATUS" 1>&2
+    fi
+  fi
 fi
